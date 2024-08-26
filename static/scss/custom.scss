@@ -1,0 +1,28 @@
+@import "../bootstrap-5.3.0/scss/functions";
+@import "../bootstrap-5.3.0/scss/variables";
+@import "../bootstrap-5.3.0/scss/mixins";
+
+// New color variables
+$col1: #0F4A4E;
+$col2: #188477;
+$col3: #76C7A6;
+$col4: #CCE8D9;
+$colYellow: #f87b62c4;
+$col5: #2D2D2D;
+$col6: #696969;
+
+// Merge the maps
+$theme-colors:map-merge($theme-colors, (
+  "color1": $col1,
+  "color2": $col2,
+  "color3": $col3,
+  "color4": $col4,
+  "color5": $col5,
+  "color6": $col6,
+  "yell": $colYellow,
+));
+
+
+// Include all of Bootstrap
+@import "../bootstrap-5.3.0/scss/bootstrap";
+

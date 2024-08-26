@@ -1,0 +1,50 @@
+#navbar .link .a7,
+#menucanvas .link .a7 {
+    background-color: #CCE8D9;
+    color: #0F4A4E;
+}
+
+#contents .profile_info {
+    display: block;
+    width: 100%;
+    float: left;
+    padding: 0;
+    color: #696969;
+}
+#contents .profile_info a {
+    color: inherit;
+    text-decoration: none;
+}
+#contents .profile_info .tab_container {
+    display: block;
+    width: 100%;
+    height: auto;
+    float: left;
+    text-align: left;
+    padding: 20px 5px;
+    color: #696969;
+}
+#contents .profile_info .tab_container .tab_div {
+    display: block;
+    width: 100%;
+    float: left;
+    padding: 0;
+}
+#contents .profile_info .tab_container .tab_div .info {
+    display: block;
+    width: 100%;
+    float: left;
+    font-size: 16px;
+}
+#contents .profile_info .tab_container .tab_div .info div {
+    width: 50%;
+    float: left;
+    padding: 2px;
+}
+
+@media only screen and (max-width: 768px) {
+    #contents .profile_info .tab_container .tab_div .info div {
+        display: block;
+        width: 100%;
+    }
+}

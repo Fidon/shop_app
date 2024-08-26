@@ -1,0 +1,14 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block title %}
+  Dashboard | ShopApp
+{% endblock %}
+{% block styles %}
+  <link href="{% static 'css/shop/dashboard.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block contents %}
+  <h1 class="py-5 my-5 text-ttxt1">Dashboard page</h1>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/shop/dashboard.js' %}"></script>
+{% endblock %}

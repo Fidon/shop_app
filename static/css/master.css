@@ -1,0 +1,246 @@
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/roboto-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+body {
+    scroll-behavior: smooth;
+    font-family: 'Roboto';
+    font-size: 0;
+    animation: fadeInAnimation ease .8s;
+	animation-iteration-count: 1;
+	animation-fill-mode: forwards;
+    background-color: #CCE8D9;
+}
+@keyframes fadeInAnimation {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+body * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+#container {
+    display: block;
+    float: left;
+    width: 100%;
+    min-height: 100vh;
+    font-size: 15px;
+}
+
+
+#container header {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 10;
+}
+#container header .divlogo,
+#container header .divbars {
+    width: auto;
+    float: left;
+    padding: 8px 0;
+}
+#container header .divlogo img {
+    display: inline-block;
+    width: 95px;
+    margin-left: 15px;
+}
+#container header .divlogo span {
+    font-size: 25px;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: 12px;
+}
+#container header .divbars {
+    float: right;
+}
+#container header .divbars span {
+    display: none;
+    float: right;
+    margin-right: 20px;
+    margin-top: 15px;
+    border: 1px solid #CCE8D9;
+    padding: 5px 12px;
+    font-size: 22px;
+    color: #CCE8D9;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#container .main {
+    margin-top: 112px;
+    display: flex;
+    width: 100%;
+}
+
+#container .main nav {
+    float: left;
+    width: 250px;
+    min-height: 100vh;
+    padding: 5px;
+    padding-right: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#navbar .link,
+#menucanvas .link {
+    display: block;
+    width: 100%;
+    float: left;
+    margin-bottom: 4px;
+}
+#navbar .link a,
+#navbar .link .header,
+#menucanvas .link a,
+#menucanvas .link .header {
+    display: block;
+    width: 100%;
+    float: left;
+    color: #CCE8D9;
+    border: 1px solid rgba(204, 232, 217, .4);
+    border-right: none;
+    padding: 10px 0;
+    padding-left: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    transition: all .8s ease;
+    cursor: pointer;
+}
+#navbar .link .header,
+#menucanvas .link .header {
+    padding-right: 5px;
+}
+#navbar .link a:hover,
+#navbar .link .header:hover,
+#menucanvas .link a:hover,
+#menucanvas .link .header:hover {
+    background-color: #CCE8D9;
+    color: #0F4A4E;
+}
+#navbar .link span i:nth-child(2),
+#navbar .link span i:nth-child(3),
+#menucanvas .link span i:nth-child(2),
+#menucanvas .link span i:nth-child(3) {
+    float: right;
+    position: relative;
+    top: 4px;
+}
+#navbar .link span i:nth-child(3),
+#menucanvas .link span i:nth-child(3) {
+    display: none;
+}
+#navbar .link div,
+#menucanvas .link div {
+    display: none;
+    width: 100%;
+    float: left;
+    padding: 2px 0;
+    padding-left: 7px;
+}
+#navbar .link div a,
+#menucanvas .link div a {
+    padding: 7px 0 7px 5px;
+    margin: 1px 0;
+}
+
+#container .main .wrapper {
+    flex-grow: 1;
+    float: left;
+    width: calc(100% - 250px);
+    height: auto;
+    min-height: 100vh;
+    padding: 5px;
+    text-align: center;
+}
+#contents form input,
+#contents form select,
+#contents form textarea {
+    border: 1px solid rgba(24, 132, 119, .5);
+}
+#contents form input:focus,
+#contents form select:focus,
+#contents form textarea:focus {
+    border-color: #188477;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 7px rgba(24, 132, 119, .7);
+    outline: none;
+}
+
+#container footer {
+    width: 100%;
+    padding: 30px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#container footer span {
+    font-size: 14px;
+    display: inline-block;
+    margin: 0 10px;
+    text-align: center;
+}
+
+@media only screen and (max-width: 820px) {
+    #container .main {
+        margin-top: 71px;
+    }
+    #container header .divlogo img {
+        width: 60px;
+        margin-left: 8px;
+    }
+    #container header .divlogo span {
+        font-size: 20px;
+        margin-left: 7px;
+    }
+    #container header .divbars span {
+        display: inline-block;
+        margin-top: 8px;
+    }
+    #container .main nav {
+        display: none;
+    }
+    #menucanvas .link .header,
+    #menucanvas .link a {
+        padding: 18px 8px;
+    }
+    #menucanvas .link div a {
+        padding: 15px 5px;
+    }
+    #container .main .wrapper {
+        width: 100%;
+        padding-top: 12px;
+    }
+    #container footer span {
+        font-size: 12px;
+    }
+}
+@media only screen and (max-width: 449px) {
+    #container .main {
+        margin-top: 68px;
+    }
+    #container header .divlogo,
+    #container header .divbars {
+        padding: 10px 0;
+    }
+    #container header .divlogo img {
+        width: 48px;
+        margin-left: 5px;
+    }
+    #container header .divlogo span {
+        font-size: 18px;
+        margin-left: 5px;
+    }
+    #container header .divbars span {
+        display: inline-block;
+        margin-top: 2px;
+    }
+}
