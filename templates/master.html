@@ -38,17 +38,28 @@
             <a href="{% url 'dashboard_page' %}" class="a1"><i class="fas fa-home"></i> &nbsp; Home</a>
           </div>
           <div class="link">
-            <a href="#" class="a2"><i class="fas fa-edit"></i> &nbsp; Sales</a>
+            <a href="{% url 'sales_page' %}" class="a2"><i class="fas fa-file-invoice"></i> &nbsp; Sales</a>
+          </div>
+          {% if request.user.is_admin %}
+            <div class="link">
+              <a href="{% url 'inventory_page' %}" class="a3"><i class="fas fa-warehouse"></i> &nbsp; Inventory</a>
+            </div>
+          {% endif %}
+          <div class="link">
+            <span class="header" id="reports_menu_btn"><i class="fas fa-list-check"></i> &nbsp; Sale reports <i class="fas fa-angle-down"></i><i class="fas fa-angle-up"></i></span>
+            <div class="submenu">
+              <a href="{% url 'sales_report' %}" class="a4"><i class="fas fa-arrow-right"></i> &nbsp; Sales</a>
+              <a href="{% url 'sale_items_report' %}" class="a7"><i class="fas fa-arrow-right"></i> &nbsp; Sale items</a>
+            </div>
           </div>
           <div class="link">
-            <a href="{% url 'inventory_page' %}" class="a3"><i class="fas fa-folder-open"></i> &nbsp; Inventory</a>
+            <a href="{% url 'user_profile' %}" class="a5"><i class="fas fa-user"></i> &nbsp; Profile</a>
           </div>
-          <div class="link">
-            <a href="#" class="a4"><i class="fas fa-user"></i> &nbsp; Profile</a>
-          </div>
-          <div class="link">
-            <a href="{% url 'users_page' %}" class="a5"><i class="fas fa-users-cog"></i> &nbsp; Users</a>
-          </div>
+          {% if request.user.is_admin %}
+            <div class="link">
+              <a href="{% url 'users_page' %}" class="a6"><i class="fas fa-users-cog"></i> &nbsp; Users</a>
+            </div>
+          {% endif %}
           <div class="link">
             <a href="{% url 'user_logout' %}"><i class="fas fa-sign-out"></i> &nbsp; Logout</a>
           </div>

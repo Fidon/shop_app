@@ -1,10 +1,10 @@
 {% extends 'master.html' %}
 {% load static %}
 {% block title %}
-  Profile | UDOM EMS
+  Profile | ShopApp
 {% endblock %}
 {% block styles %}
-  <link href="{% static 'css/profile.css' %}" rel="stylesheet" type="text/css" />
+  <link href="{% static 'css/users/profile.css' %}" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block contents %}
   <div class="profile_info">
@@ -27,11 +27,11 @@
           </div>
 
           <div class="buttons w-100 py-3">
-            <button type="button" class="btn btn-bblue text-white d-inline-block m-2" data-bs-toggle="offcanvas" data-bs-target="#password_update_canvas">Update password</button>
-            {% if request.user.dept == 1 %}
-              <button type="button" class="btn btn-bblue text-white d-inline-block m-2" data-bs-toggle="offcanvas" data-bs-target="#profile_update_canvas">Update profile</button>
+            <button type="button" class="btn btn-color2 text-white d-inline-block m-2" data-bs-toggle="offcanvas" data-bs-target="#password_update_canvas">Update password</button>
+            {% if request.user.is_admin %}
+              <button type="button" class="btn btn-color2 text-white d-inline-block m-2" data-bs-toggle="offcanvas" data-bs-target="#profile_update_canvas">Update profile</button>
             {% else %}
-              <button type="button" class="btn btn-bblue text-white d-inline-block m-2" data-bs-toggle="offcanvas" data-bs-target="#contact_update_canvas">Update contact</button>
+              <button type="button" class="btn btn-color2 text-white d-inline-block m-2" data-bs-toggle="offcanvas" data-bs-target="#contact_update_canvas">Update contact</button>
             {% endif %}
           </div>
         </div>
@@ -40,7 +40,7 @@
   </div>
 
   <div class="offcanvas offcanvas-start" id="password_update_canvas">
-    <div class="offcanvas-header bg-bblue">
+    <div class="offcanvas-header bg-color2">
       <h6 class="offcanvas-title text-white">Change password..</h6>
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
@@ -48,28 +48,28 @@
       <form action="{% url 'user_profile' %}" autocomplete="off" class="d-block w-100 float-start" id="change_password_form">
         <div class="formsms w-100 float-start my-1 text-start"></div>
         <div class="form-floating d-block w-100 float-start my-1">
-          <input type="password" class="form-control text-ttxt fs-6" name="old_password" id="pass_current" placeholder="p" required />
-          <label for="pass_current" class="text-ttxt fs-6">Current password</label>
+          <input type="password" class="form-control text-color5 fs-6" name="old_password" id="pass_current" placeholder="p" required />
+          <label for="pass_current" class="text-color5 fs-6">Current password</label>
         </div>
         <div class="form-floating d-block w-100 float-start my-1">
-          <input type="password" class="form-control text-ttxt fs-6" name="new_password1" id="pass_newpass" placeholder="p" required />
-          <label for="pass_newpass" class="text-ttxt fs-6">New password</label>
+          <input type="password" class="form-control text-color5 fs-6" name="new_password1" id="pass_newpass" placeholder="p" required />
+          <label for="pass_newpass" class="text-color5 fs-6">New password</label>
         </div>
         <div class="form-floating d-block w-100 float-start my-1">
-          <input type="password" class="form-control text-ttxt fs-6" name="new_password2" id="pass_confirm" placeholder="p" required />
-          <label for="pass_confirm" class="text-ttxt fs-6">Confirm new password</label>
+          <input type="password" class="form-control text-color5 fs-6" name="new_password2" id="pass_confirm" placeholder="p" required />
+          <label for="pass_confirm" class="text-color5 fs-6">Confirm new password</label>
         </div>
         <div class="form-floating d-block w-100 float-start my-3 text-end">
           <button type="button" class="btn btn-danger d-inline-block me-2" id="pass_cancel_btn" data-bs-dismiss="offcanvas">Cancel</button>
-          <button type="submit" class="btn btn-success d-inline-block" id="pass_submit_btn">Save</button>
+          <button type="submit" class="btn btn-color2 text-white d-inline-block" id="pass_submit_btn">Save</button>
         </div>
       </form>
     </div>
   </div>
 
-  {% if request.user.dept == 1 %}
+  {% if request.user.is_admin %}
     <div class="offcanvas offcanvas-start" id="profile_update_canvas">
-      <div class="offcanvas-header bg-bblue">
+      <div class="offcanvas-header bg-color2">
         <h6 class="offcanvas-title text-white">Update profile..</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
@@ -77,28 +77,28 @@
         <form action="{% url 'user_profile' %}" autocomplete="off" class="d-block w-100 float-start" id="profile_update_form">
           <div class="formsms w-100 float-start my-1 text-start"></div>
           <div class="form-floating d-block w-100 float-start my-1">
-            <input type="text" class="form-control text-ttxt fs-6" id="prof_fullname" name="fullname" placeholder="p" value="{{ profile.fullname }}" required />
-            <label for="prof_fullname" class="text-ttxt fs-6">Fullname</label>
+            <input type="text" class="form-control text-color5 fs-6" id="prof_fullname" name="fullname" placeholder="p" value="{{ profile.fullname }}" required />
+            <label for="prof_fullname" class="text-color5 fs-6">Fullname</label>
           </div>
           <div class="form-floating d-block w-100 float-start my-1">
-            <input type="text" class="form-control text-ttxt fs-6" id="prof_username" name="username" placeholder="p" value="{{ profile.username }}" required />
-            <label for="prof_username" class="text-ttxt fs-6">Username</label>
+            <input type="text" class="form-control text-color5 fs-6" id="prof_username" name="username" placeholder="p" value="{{ profile.username }}" required />
+            <label for="prof_username" class="text-color5 fs-6">Username</label>
           </div>
           <div class="form-floating d-block w-100 float-start my-1">
-            <input type="text" minlength="9" maxlength="10" class="form-control text-ttxt fs-6" id="prof_contact" name="phone" placeholder="p" value="{{ profile.phone }}" required />
-            <label for="prof_contact" class="text-ttxt fs-6">Mobile</label>
+            <input type="text" minlength="9" maxlength="10" class="form-control text-color5 fs-6" id="prof_contact" name="phone" placeholder="p" value="{{ profile.phone }}" required />
+            <label for="prof_contact" class="text-color5 fs-6">Mobile</label>
           </div>
           <input type="hidden" name="update_profile" value="1" />
           <div class="form-floating d-block w-100 float-start my-3 text-end">
             <button type="button" class="btn btn-danger d-inline-block me-2" id="profile_cancel_btn" data-bs-dismiss="offcanvas">Cancel</button>
-            <button type="submit" class="btn btn-success d-inline-block" id="profile_submit_btn">Save</button>
+            <button type="submit" class="btn btn-color2 text-white d-inline-block" id="profile_submit_btn">Save</button>
           </div>
         </form>
       </div>
     </div>
   {% else %}
     <div class="offcanvas offcanvas-start" id="contact_update_canvas">
-      <div class="offcanvas-header bg-bblue">
+      <div class="offcanvas-header bg-color2">
         <h6 class="offcanvas-title text-white">Change phone number..</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
@@ -106,12 +106,12 @@
         <form action="{% url 'user_profile' %}" autocomplete="off" class="d-block w-100 float-start" id="profile_update_form">
           <div class="formsms w-100 float-start my-1 text-start"></div>
           <div class="form-floating d-block w-100 float-start my-1">
-            <input type="number" minlength="9" class="form-control text-ttxt fs-6" name="change_contact" id="prof_contact" value="{{ profile.phone }}" placeholder="p" required />
-            <label for="prof_contact" class="text-ttxt fs-6">Current contact</label>
+            <input type="number" minlength="9" class="form-control text-color5 fs-6" name="change_contact" id="prof_contact" value="{{ profile.phone }}" placeholder="p" required />
+            <label for="prof_contact" class="text-color5 fs-6">Current contact</label>
           </div>
           <div class="form-floating d-block w-100 float-start my-3 text-end">
             <button type="button" class="btn btn-danger d-inline-block me-2" id="profile_cancel_btn" data-bs-dismiss="offcanvas">Cancel</button>
-            <button type="submit" class="btn btn-success d-inline-block" id="profile_submit_btn">Save</button>
+            <button type="submit" class="btn btn-color2 text-white d-inline-block" id="profile_submit_btn">Save</button>
           </div>
         </form>
       </div>
@@ -119,5 +119,5 @@
   {% endif %}
 {% endblock %}
 {% block scripts %}
-  <script src="{% static 'js/profile.js' %}"></script>
+  <script src="{% static 'js/users/profile.js' %}"></script>
 {% endblock %}

@@ -7,7 +7,72 @@
   <link href="{% static 'css/shop/dashboard.css' %}" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block contents %}
-  <h1 class="py-5 my-5 text-ttxt1">Dashboard page</h1>
+  <div class="welcome w-100 text-start text-color5">Welcome back, {{ request.user.fullname }} ({{ request.user.username }})</div>
+  <div class="watch w-100 text-start text-color5" id="clock"></div>
+
+  <div class="div_heading">Inventory summary</div>
+  <div class="summary">
+    <div class="shadow-lg">
+      <span class="num">{{ count_products }}</span>
+      <span class="txt">Total products</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ count_empty }}</span>
+      <span class="txt">Near expiry</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ count_expiry }}</span>
+      <span class="txt">Near empty</span>
+    </div>
+  </div>
+
+  <div class="div_heading">Daily sales summary</div>
+  <div class="summary">
+    <div class="shadow-lg">
+      <span class="num">{{ day4_sales }}</span>
+      <span class="txt">{{ day4 }}</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ day3_sales }}</span>
+      <span class="txt">{{ day3 }}</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ day2_sales }}</span>
+      <span class="txt">{{ day2 }}</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ day1_sales }}</span>
+      <span class="txt">Yesterday</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ today_sales }}</span>
+      <span class="txt">Today</span>
+    </div>
+  </div>
+
+  <div class="div_heading">Monthly sales summary</div>
+  <div class="summary">
+    <div class="shadow-lg">
+      <span class="num">{{ month4_sales }}</span>
+      <span class="txt">{{ month4 }}</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ month3_sales }}</span>
+      <span class="txt">{{ month3 }}</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ month2_sales }}</span>
+      <span class="txt">{{ month2 }}</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ month1_sales }}</span>
+      <span class="txt">Last month</span>
+    </div>
+    <div class="shadow-lg">
+      <span class="num">{{ month_sales }}</span>
+      <span class="txt">This month</span>
+    </div>
+  </div>
 {% endblock %}
 {% block scripts %}
   <script src="{% static 'js/shop/dashboard.js' %}"></script>

@@ -12,6 +12,7 @@ class ProductForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['expiry'].required = False
         self.fields['comment'].required = False
+        self.fields['qty'].required = False
 
     def clean_names(self):
         names = self.cleaned_data.get('names').strip()

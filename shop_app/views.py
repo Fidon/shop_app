@@ -13,4 +13,8 @@ def index_page(request):
     return render(request, 'index.html')
 
 
+def error_404(request, exception):
+    return render(request, '404.html', status=404)
 
+def error_403(request, exception):
+    return render(request, '403.html', status=403)

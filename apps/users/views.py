@@ -7,11 +7,64 @@ from .forms import CustomUserForm, CustomAuthenticationForm
 from .models import CustomUser
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
-from utils.util_functions import parse_datetime
+from utils.util_functions import parse_datetime, admin_required
 
 
 # datetime format
 format_datetime = "%Y-%m-%d %H:%M:%S.%f"
+
+def handle_user_deletion(user_id):
+    user_instance = CustomUser.objects.get(id=user_id)
+    user_instance.deleted = True
+    user_instance.save()
+    return {'success': True, 'url': reverse('users_list')}
+
+def handle_user_blocking(user_id):
+    user_instance = CustomUser.objects.get(id=user_id)
+    user_instance.blocked = not user_instance.blocked
+    user_instance.save()
+    return {'success': True}
+
+def validate_user_data(username, phone, edit_user=None):
+    if len(username) < 5:
+        return {'success': False, 'sms': 'Username should be at least 5 alphabets long.'}
+    if not username.isalpha():
+        return {'success': False, 'sms': 'Username should contain only alphabets A-Z.'}
+    if CustomUser.objects.filter(username=username, deleted=False).exclude(id=edit_user).exists():
+        return {'success': False, 'sms': 'This username is already used by another user.'}
+    if phone is not None:
+        if not phone.isdigit() or len(phone) != 10:
+            return {'status': False, 'sms': 'Please use a valid 10-digit phone number.'}
+        if CustomUser.objects.filter(phone=phone, deleted=False).exclude(id=edit_user).exists():
+            return {'success': False, 'sms': 'This phone is already used by another user.'}
+    return None
+
+def handle_user_editing(user_instance, fullname, username, phone, comment):
+    validation_errors = validate_user_data(username, phone, user_instance.id)
+    if validation_errors:
+        return validation_errors
+
+    user_instance.fullname = fullname
+    user_instance.username = username
+    user_instance.phone = phone
+    user_instance.comment = comment
+    user_instance.save()
+    return {'success': True, 'update_success': True, 'sms': 'User information updated.'}
+
+def handle_password_reset(user_id):
+    user_instance = CustomUser.objects.get(id=user_id)
+    new_password = user_instance.username.upper()
+    user_instance.set_password(new_password)
+    user_instance.save()
+    return {'success': True}
+
+def handle_user_registration(post_data):
+    form = CustomUserForm(post_data)
+    if form.is_valid():
+        form.save()
+        return {'success': True, 'sms': 'Registration completed!'}
+    errorMsg = form.errors.get('username', form.errors.get('phone', ['Unknown error, reload & try again'])[0])[0]
+    return {'success': False, 'sms': errorMsg}
 
 
 @never_cache
@@ -20,16 +73,18 @@ def authenticate_user(request):
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
+            next_url = request.POST.get('next_url', reverse('dashboard_page'))
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=username, password=password)
             if user is not None and not user.blocked and not user.deleted:
                 login(request, user)
-                response = JsonResponse({'success': True, 'url': reverse('dashboard_page')})
+                response = JsonResponse({'success': True, 'url': next_url})
                 response.set_cookie('user_id', user.username)
         else:
             response = JsonResponse({'success': False, 'sms': form.errors['__all__'][0], 'error':form.errors})
     return response
+
 
 @login_required
 def user_signout(request):
@@ -39,6 +94,7 @@ def user_signout(request):
 
 @never_cache
 @login_required
+@admin_required()
 def manage_users(request):
     if request.method == 'POST':
         draw = int(request.POST.get('draw', 0))
@@ -162,8 +218,10 @@ def manage_users(request):
         return JsonResponse(ajax_response)
     return render(request, 'users/users.html')
 
+
 @never_cache
 @login_required
+@admin_required()
 def users_requests(request):
     if request.method == 'POST':
         try:
@@ -171,92 +229,117 @@ def users_requests(request):
             delete_user = request.POST.get('delete_user')
             block_user = request.POST.get('block_user')
             reset_password = request.POST.get('reset_password')
+
             if delete_user:
-                user_instance = CustomUser.objects.get(id=delete_user)
-                user_instance.deleted = True
-                user_instance.save()
-                fdback = {'success': True, 'url':reverse('users_list')}
+                fdback = handle_user_deletion(delete_user)
             elif block_user:
-                user_instance = CustomUser.objects.get(id=block_user)
-                user_instance.blocked = not user_instance.blocked
-                user_instance.save()
-                fdback = {'success': True}
+                fdback = handle_user_blocking(block_user)
             elif edit_user:
                 user_instance = CustomUser.objects.get(id=edit_user)
-                fullname = request.POST.get('fullname').strip()
-                fullname = ' '.join(word.capitalize() for word in fullname.split())
-                username = request.POST.get('username').strip().capitalize()
-                phone = request.POST.get('phone').strip()
-                if len(phone) == 0:
-                    phone = None
-                comment = request.POST.get('comment').strip()
-                if len(comment) == 0:
-                    comment = None
-
-                if len(username) < 5:
-                    return JsonResponse({'success': False, 'sms': 'Username should be atleast 5 alphabets long.'})
-                
-                if not username.isalpha():
-                    return JsonResponse({'success': False, 'sms': 'Username should contain only alphabets A-Z.'})
-                
-                if CustomUser.objects.filter(username=username, deleted=False).exclude(id=edit_user).exists():
-                    return JsonResponse({'success': False, 'sms': 'This username is already used by another user.'})
-                
-                if phone is not None and not phone.isdigit():
-                    return JsonResponse({'status': False, 'sms': 'Please use a 10-digit phone number.'})
-                
-                if phone is not None and len(phone) != 10:
-                    return JsonResponse({'status': False, 'sms': 'Please use a 10-digit phone number.'})
-                
-                if phone is not None and CustomUser.objects.filter(phone=phone, deleted=False).exclude(id=edit_user).exists():
-                    return JsonResponse({'success': False, 'sms': 'This phone is already used by another user.'})
-                
-                user_instance.fullname = fullname
-                user_instance.username = username
-                user_instance.phone = phone
-                user_instance.comment = comment
-                user_instance.save()
-                fdback = {'success': True, 'update_success':True, 'sms': 'User information updated.'}
+                fullname = ' '.join(word.capitalize() for word in request.POST.get('fullname', '').strip().split())
+                username = request.POST.get('username', '').strip().capitalize()
+                phone = request.POST.get('phone', '').strip() or None
+                comment = request.POST.get('comment', '').strip() or None
+                fdback = handle_user_editing(user_instance, fullname, username, phone, comment)
             elif reset_password:
-                user_instance = CustomUser.objects.get(id=reset_password)
-                new_password = user_instance.username.upper()
-                user_instance.set_password(new_password)
-                user_instance.save()
-                fdback = {'success': True}
+                fdback = handle_password_reset(reset_password)
             else:
-                form = CustomUserForm(request.POST)
-                if form.is_valid():
-                    form.save()
-                    fdback = {'success': True, 'sms': 'Registration completed!'}
-                else:
-                    errorMsg = ""
-                    if 'username' in form.errors:
-                        errorMsg = form.errors['username'][0]
-                    if 'phone' in form.errors:
-                        errorMsg = form.errors['phone'][0]
-                    fdback = {'success': False, 'sms': errorMsg}
+                fdback = handle_user_registration(request.POST)
         except Exception as e:
-            fdback = {'success': False, 'sms': 'Unknown error occured'}
+            fdback = {'success': False, 'sms': 'Unknown error, reload & try again'}
         return JsonResponse(fdback)
     return JsonResponse({'success': False, 'sms': 'Invalid data'})
 
+
 @never_cache
 @login_required
+@admin_required()
 def user_details(request, user_id):
-    if request.method == 'GET' and CustomUser.objects.filter(id=user_id, deleted=False).exists():
-        user_instance = CustomUser.objects.get(id=user_id)
+    if request.method == 'GET' and not user_id == request.user.id:
+        try:
+            user_instance = CustomUser.objects.get(id=user_id, deleted=False)
+        except CustomUser.DoesNotExist:
+            return redirect('users_page')
+
         user_data = {
             'id': user_instance.id,
             'regdate': user_instance.regdate.strftime('%d-%b-%Y %H:%M:%S'),
             'fullname': user_instance.fullname,
             'username': user_instance.username,
-            'phone': user_instance.phone if user_instance.phone else '',
+            'phone': user_instance.phone or '',
             'status': "Blocked" if user_instance.blocked else "Active",
-            'comment': user_instance.comment if user_instance.comment else '',
+            'comment': user_instance.comment or '',
         }
-        context = {
-            'user_info': user_id,
-            'user': user_data,
-        }
-        return render(request, 'users/users.html', context)
+        return render(request, 'users/users.html', {'user_info': user_id, 'user': user_data})
     return redirect('users_page')
+
+
+@never_cache
+@login_required
+def user_profile_page(request):
+    if request.method == 'POST':
+        try:
+            user = request.user
+            change_contact = request.POST.get('change_contact')
+            update_profile = request.POST.get('update_profile')
+            old_password = request.POST.get('old_password')
+            new_password = request.POST.get('new_password1')
+            confirm_password = request.POST.get('new_password2')
+
+            if change_contact:
+                if not change_contact.isdigit() or len(change_contact) != 10:
+                    return JsonResponse({'success': False, 'sms': 'Please use a valid 10-digit phone number.'})
+                if CustomUser.objects.filter(phone=change_contact, deleted=False).exclude(id=user.id).exists():
+                    return JsonResponse({'success': False, 'sms': 'This phone number is already used by another account.'})
+                
+                user.phone = change_contact
+                user.save()
+                return JsonResponse({'success': True, 'sms': 'Contact updated successfully'})
+
+            elif update_profile:
+                fullname = ' '.join(word.capitalize() for word in request.POST.get('fullname').strip().split())
+                username = request.POST.get('username').strip().capitalize()
+                phone = request.POST.get('phone').strip() or None
+
+                if len(username) < 5:
+                    return JsonResponse({'success': False, 'sms': 'Username should be at least 5 alphabets long.'})
+                if not username.isalpha():
+                    return JsonResponse({'success': False, 'sms': 'Username should contain only alphabets A-Z.'})
+                if CustomUser.objects.filter(username=username, deleted=False).exclude(id=user.id).exists():
+                    return JsonResponse({'success': False, 'sms': 'This username is already used by another user.'})
+                if phone and (not phone.isdigit() or len(phone) != 10):
+                    return JsonResponse({'success': False, 'sms': 'Please use a valid 10-digit phone number.'})
+                if phone and CustomUser.objects.filter(phone=phone, deleted=False).exclude(id=user.id).exists():
+                    return JsonResponse({'success': False, 'sms': 'This phone number is already used by another account.'})
+                
+                user.fullname = fullname
+                user.username = username
+                user.phone = phone
+                user.save()
+                return JsonResponse({'success': True, 'update_success': True, 'sms': 'Profile updated successfully.'})
+
+            else:
+                if not authenticate(username=user.username, password=old_password):
+                    return JsonResponse({'success': False, 'sms': 'Incorrect current password!'})
+                if len(new_password) < 8:
+                    return JsonResponse({'success': False, 'sms': f'Password should be 8 or more characters long, (not {len(new_password)})'})
+                if new_password != confirm_password:
+                    return JsonResponse({'success': False, 'sms': "Passwords should match in both fields"})
+
+                user.set_password(new_password)
+                user.save()
+                login(request, user, backend='shop_app.password_backend.CaseInsensitiveModelBackend')
+                return JsonResponse({'success': True, 'sms': 'Password changed successfully'})
+
+        except Exception as e:
+            print(e)
+            return JsonResponse({'success': False, 'sms': 'Unknown error, reload & try again'})
+
+    data = {
+        'regdate': request.user.regdate.strftime('%d-%b-%Y %H:%M:%S'),
+        'fullname': request.user.fullname,
+        'username': request.user.username,
+        'phone': request.user.phone or "",
+        'mobile': request.user.phone or "N/A",
+    }
+    return render(request, 'users/profile.html', {'profile': data})
